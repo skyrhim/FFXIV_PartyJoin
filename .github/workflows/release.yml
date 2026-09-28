@@ -64,7 +64,7 @@ jobs:
         run: |
           $packageDirectory = Join-Path $env:RUNNER_TEMP 'PartyJoin-release'
           New-Item -ItemType Directory -Path $packageDirectory -Force | Out-Null
-          Copy-Item bin/Release/PartyJoin.dll, README.md, LICENSE.txt -Destination $packageDirectory
+          Copy-Item bin/Release/PartyJoin.dll, LICENSE.txt -Destination $packageDirectory
           Compress-Archive -Path (Join-Path $packageDirectory '*') -DestinationPath "PartyJoin-v$env:RELEASE_VERSION.zip" -Force
 
       - name: Publish GitHub Release

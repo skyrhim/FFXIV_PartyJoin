@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - Properties/AssemblyInfo.cs
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/master'
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read release version
+        id: release_version
+        shell: pwsh
+        run: |
+          $assemblyInfo = Get-Content Properties/AssemblyInfo.cs -Raw
+          $match = [regex]::Match($assemblyInfo, 'AssemblyFileVersion\("(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)\.(?<revision>\d+)"\)')
+          if (-not $match.Success) {
+            throw 'AssemblyFileVersion must use four numeric components, for example 1.0.0.0.'
+          }
+          if ($match.Groups['revision'].Value -ne '0') {
+            throw 'Set the fourth AssemblyFileVersion component to 0; use the first three components for the release version.'
+          }
+
+          $version = "$($match.Groups['major'].Value).$($match.Groups['minor'].Value).$($match.Groups['patch'].Value)"
+          $tag = "v$version"
+          git fetch --tags
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $tagExists = [bool](git tag --list $tag)
+
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+          "tag_exists=$($tagExists.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+
+      - name: Set up MSBuild
+        if: steps.release_version.outputs.tag_exists == 'false'
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build Release
+        if: steps.release_version.outputs.tag_exists == 'false'
+        shell: pwsh
+        run: |
+          msbuild PartyJoin.sln /p:Configuration=Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Package plugin
+        if: steps.release_version.outputs.tag_exists == 'false'
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.release_version.outputs.version }}
+        run: |
+          $packageDirectory = Join-Path $env:RUNNER_TEMP 'PartyJoin-release'
+          New-Item -ItemType Directory -Path $packageDirectory -Force | Out-Null
+          Copy-Item bin/Release/PartyJoin.dll, README.md, LICENSE.txt -Destination $packageDirectory
+          Compress-Archive -Path (Join-Path $packageDirectory '*') -DestinationPath "PartyJoin-v$env:RELEASE_VERSION.zip" -Force
+
+      - name: Publish GitHub Release
+        if: steps.release_version.outputs.tag_exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: PartyJoin ${{ steps.release_version.outputs.version }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: PartyJoin-v${{ steps.release_version.outputs.version }}.zip

@@ -5,9 +5,7 @@ PartyJoin은 FFXIV ACT Plugin에서 파티 참가 패킷을 감지하고 Discord
 ## 설치
 
 1. 릴리스 ZIP에서 `PartyJoin.dll`을 압축 해제합니다.
-2. 다음 두 방법 중 하나로 플러그인을 설치합니다.
-	- **ACT에서 수동 추가:** ACT의 `Plugins` 탭에서 `Browse...`를 눌러 `PartyJoin.dll`을 선택하고 추가합니다.
-	- **Plugins 폴더에 직접 복사:** ACT를 종료한 뒤 ACT 설치 폴더의 `Plugins` 폴더에 `PartyJoin.dll`을 복사하고 ACT를 다시 실행합니다. 플러그인이 목록에 나타나지 않으면 ACT의 `Plugins` 탭에서 해당 DLL을 수동으로 추가합니다.
+2. ACT의 `Plugins` 탭에서 `Browse...`를 눌러 `PartyJoin.dll`을 선택한 다음 `Add/Enable Plugin` 버튼을 눌러 수동으로 추가합니다.
 3. `FFXIV_ACT_Plugin`이 실행 중인지 확인합니다.
 4. ACT에서 `PartyJoin` 탭을 엽니다.
 

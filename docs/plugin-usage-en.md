@@ -5,9 +5,7 @@ PartyJoin is an ACT plugin for FFXIV that detects party join packets and can sen
 ## Installation
 
 1. Extract `PartyJoin.dll` from the release ZIP file.
-2. Install the plugin using one of these methods:
-	- **Add it in ACT:** Open ACT's `Plugins` tab, click `Browse...`, select `PartyJoin.dll`, and add it.
-	- **Copy it directly:** Close ACT, copy `PartyJoin.dll` into the `Plugins` folder inside the ACT installation directory, and restart ACT. If the plugin does not appear in the list, add the DLL manually from ACT's `Plugins` tab.
+2. Open ACT's `Plugins` tab, click `Browse...`, select `PartyJoin.dll`, and click `Add/Enable Plugin` to add it manually.
 3. Make sure `FFXIV_ACT_Plugin` is running.
 4. Open the `PartyJoin` tab in ACT.
 

@@ -14,7 +14,7 @@ namespace PartyJoin
 {
 	public sealed class PartyJoinPlugin : UserControl, IActPluginV1
 	{
-		private const ushort PartyJoinOpcode = 744;
+		private const ushort PartyJoinOpcode = 810;
 		private const int PacketHeaderLength = 32;
 		private const int MaxLoggedPayloadLength = 96;
 		private const int MaxQueuedLogLines = 2000;

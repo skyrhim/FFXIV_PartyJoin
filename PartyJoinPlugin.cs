@@ -14,7 +14,6 @@ namespace PartyJoin
 {
 	public sealed class PartyJoinPlugin : UserControl, IActPluginV1
 	{
-		private const ushort PartyJoinOpcode = 810;
 		private const int PacketHeaderLength = 32;
 		private const int MaxLoggedPayloadLength = 96;
 		private const int MaxQueuedLogLines = 2000;
@@ -57,6 +56,13 @@ namespace PartyJoin
 				"PartyJoin.config");
 			PartyJoinConfig.Load(configPath);
 			LoadSettings();
+
+			OpcodeStore.LoadCache(Path.Combine(
+				ActGlobals.oFormActMain.AppDataFolder.FullName,
+				"Config",
+				"PartyJoin.opcodes.json"));
+			OpcodeStore.Changed += message => QueueLogLine($"[{DateTime.Now:HH:mm:ss}] {message}");
+			_ = OpcodeStore.UpdateFromRemoteAsync(HttpClient);
 
 			var ffxivPluginData = ActGlobals.oFormActMain.ActPlugins.FirstOrDefault(plugin =>
 				plugin.pluginFile.Name.StartsWith("FFXIV_ACT_Plugin", StringComparison.OrdinalIgnoreCase) &&
@@ -206,7 +212,7 @@ namespace PartyJoin
 			if (_isPacketLoggingEnabled)
 				QueuePacketLog(connection, opcode, message);
 
-			if (opcode != PartyJoinOpcode)
+			if (opcode != OpcodeStore.PartyJoin)
 				return;
 
 			const int nicknameOffset = 34;

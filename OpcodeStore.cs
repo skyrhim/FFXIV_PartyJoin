@@ -15,7 +15,7 @@ namespace PartyJoin
 
 		private static readonly Dictionary<string, ushort> Defaults = new Dictionary<string, ushort>
 		{
-			{ PartyJoinKey, 810 },
+			{ PartyJoinKey, 662 },
 		};
 
 		private static readonly object Sync = new object();
